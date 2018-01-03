@@ -74,7 +74,7 @@ class FavorOrderPresenter : FavorPresenter<Result> {
 	}
 }
 
-/** 收藏订单Presenter */
+/** xx订单Presenter */
 class ReviewOrderPresenter : ReviewPresenter<Result> {
 	override init() {
 		super.init()

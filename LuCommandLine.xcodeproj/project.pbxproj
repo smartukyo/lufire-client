@@ -89,7 +89,6 @@
 			isa = PBXGroup;
 			children = (
 				FA5E331E1FFA2FE9002BDBDB /* base.swift */,
-				FA5E33201FFA3103002BDBDB /* results.swift */,
 				FA5E33241FFA56BF002BDBDB /* presenter.swift */,
 				FA5E33261FFA6496002BDBDB /* nao.swift */,
 				FA8EA66E1FFA8A3500091A7A /* view.swift */,
@@ -110,6 +109,7 @@
 		FAFEDA521FFC778500E73B59 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				FA5E33201FFA3103002BDBDB /* results.swift */,
 				FA8EA66A1FFA7D5700091A7A /* config.swift */,
 				FA1BDB3B1FFB4E9C00FF61E1 /* Business.swift */,
 			);

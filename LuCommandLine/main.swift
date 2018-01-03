@@ -15,7 +15,7 @@ print("Hello, World!")
 Config.getToken()
 
 var view = BuyerOrderView()
-view.onCmdList()
+repeat {view.onCmdList()} while (view.increasePage() < 10);
 view.id = 100
 view.onCmdDelete()
 view.onCmdCancel()

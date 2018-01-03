@@ -114,8 +114,9 @@ class GroupPresenter<R> : Presenter<R> {
 	* @param pid
 	* @return
 	*/
-	func findOperationPresenter<T>(_ pid : Int) -> OperationPresenter<T> {
-		return findPresenter(pid) as! OperationPresenter<T>
+	func findOperationPresenter<T>(_ pid : Int) -> OperationPresenter<T>? {
+		if let p : Presenter<T> = findPresenter(pid) {return p as! OperationPresenter<T>}
+		return nil
 	}
 	/**
 	* 往组内添加一个Presenter
