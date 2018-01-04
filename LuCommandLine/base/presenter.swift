@@ -152,25 +152,30 @@ class EntityPresenter<E> : GroupPresenter<E> {
 			return nil
 		}
 	}
+	func getDeleteNao<T>() -> Nao<T> {return nao as! Nao<T>}
+	func getCancelNao<T>() -> Nao<T> {return nao as! Nao<T>}
+	func getInputNao<T>() -> Nao<T> {return nao as! Nao<T>}
+	func getEditNao<T>() -> Nao<T> {return nao as! Nao<T>}
+	func getDetailsNao<T>() -> Nao<T> {return nao as! Nao<T>}
 	/** 删除 */
-	func delete(_ id : Int , _ listener : IListener<E>) -> Int {
-		return execute(nao!, entityNao!.getDeleteQuerier(id), listener)
+	func delete<T>(_ id : Int , _ listener : IListener<T>) -> Int {
+		return execute(getDeleteNao(), entityNao!.getDeleteQuerier(id), listener)
 	}
 	/** 取消 */
-	func cancel(_ id : Int , _ listener : IListener<E>) -> Int {
-		return execute(nao!, entityNao!.getCancelQuerier(id), listener)
+	func cancel<T>(_ id : Int , _ listener : IListener<T>) -> Int {
+		return execute(getCancelNao(), entityNao!.getCancelQuerier(id), listener)
 	}
 	/** 编辑UI */
-	func input(_ id : Int , _ listener : IListener<E> , _ processor : IQuerierProcessor<E>? = nil) -> Int {
-		return execute(nao!, entityNao!.getInputQuerier(id), listener , processor)
+	func input<T>(_ id : Int , _ listener : IListener<T> , _ processor : IQuerierProcessor<T>? = nil) -> Int {
+		return execute(getInputNao(), entityNao!.getInputQuerier(id), listener , processor)
 	}
 	/** 编辑 */
-	func edit(_ id : Int , _ listener : IListener<E> , _ processor : IQuerierProcessor<E>) -> Int {
-		return execute(nao!, entityNao!.getEditQuerier(id), listener, processor)
+	func edit<T>(_ id : Int , _ listener : IListener<T> , _ processor : IQuerierProcessor<T>) -> Int {
+		return execute(getEditNao(), entityNao!.getEditQuerier(id), listener, processor)
 	}
 	/** 获取详情 */
-	func details(_ id : Int , _ listener : IListener<E>) -> Int {
-		return execute(nao!, entityNao!.getDetailsQuerier(id), listener)
+	func details<T>(_ id : Int , _ listener : IListener<T>) -> Int {
+		return execute(getDetailsNao(), entityNao!.getDetailsQuerier(id), listener)
 	}
 }
 

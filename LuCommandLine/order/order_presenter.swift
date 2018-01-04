@@ -18,6 +18,13 @@ class OrderComboPresenter : ComboPresenter<Result, ListLeaseOrdersResult> {
 		addPresenter(FavorOrderPresenter())
 		addPresenter(ReviewOrderPresenter())
 	}
+	override func getInputNao<T>() -> Nao<T> {
+		return EditOrderNao.obtainEditOrderNaoInstance() as! Nao<T>
+	}
+	//debug only
+	override func getDeleteNao<T>() -> Nao<T> {
+		return DeleteOrderNao.obtainDeleteOrderNaoInstance() as! Nao<T>
+	}
 }
 
 /**

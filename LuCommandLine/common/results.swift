@@ -33,7 +33,11 @@ class ListResult : Result {
 	func hasMore() -> Bool {return pageStop < totalRecords}
 }
 
-class OrderResult {
+class OrderResult : Result {
+	
+}
+
+class DeleteOrderResult : Result {
 	
 }
 

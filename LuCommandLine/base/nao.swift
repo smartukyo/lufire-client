@@ -63,38 +63,45 @@ class Nao<R> {
 * @author BraveLu
 */
 protocol PEntityNao {
-	associatedtype E
+	//associatedtype E
 	/** 提供编辑UI查询器 */
-	func getInputQuerier(_ id : Int) -> Querier<E>
+	func getInputQuerier<T>(_ id : Int) -> Querier<T>
 	/** 编辑操作查询器 */
-	func getEditQuerier(_ id : Int) -> Querier<E>
+	func getEditQuerier<T>(_ id : Int) -> Querier<T>
 	/** 获取详情操作查询器 */
-	func getDetailsQuerier(_ id : Int) -> Querier<E>
+	func getDetailsQuerier<T>(_ id : Int) -> Querier<T>
 	/** 删除操作查询器 */
-	func getDeleteQuerier(_ id : Int) -> Querier<E>
+	func getDeleteQuerier<T>(_ id : Int) -> Querier<T>
 	/** 取消操作查询器 */
-	func getCancelQuerier(_ id : Int) -> Querier<E>
+	func getCancelQuerier<T>(_ id : Int) -> Querier<T>
 }
 
 class IEntityNao<E> : PEntityNao {
-	let m_fnGetDeleteQuerier : (Int) -> Querier<E>
-	let m_fnGetCancelQuerier : (Int) -> Querier<E>
-	let m_fnGetDetailsQuerier : (Int) -> Querier<E>
-	let m_fnGetEditQuerier : (Int) -> Querier<E>
-	let m_fnGetInputQuerier : (Int) -> Querier<E>
+//	let m_fnGetDeleteQuerier : (Int) -> Querier<E>
+//	let m_fnGetCancelQuerier : (Int) -> Querier<E>
+//	let m_fnGetDetailsQuerier : (Int) -> Querier<E>
+//	let m_fnGetEditQuerier : (Int) -> Querier<E>
+//	let m_fnGetInputQuerier : (Int) -> Querier<E>
+	let delegatee : PEntityNao
 	
-	init<D: PEntityNao>(_ delegatee: D) where D.E == E {
-		m_fnGetDeleteQuerier = delegatee.getDeleteQuerier
-		m_fnGetCancelQuerier = delegatee.getCancelQuerier
-		m_fnGetDetailsQuerier = delegatee.getDetailsQuerier
-		m_fnGetInputQuerier = delegatee.getInputQuerier
-		m_fnGetEditQuerier = delegatee.getEditQuerier
+	init<D: PEntityNao>(_ delegatee: D) /*where D.E == E*/ {
+//		m_fnGetDeleteQuerier = delegatee.getDeleteQuerier
+//		m_fnGetCancelQuerier = delegatee.getCancelQuerier
+//		m_fnGetDetailsQuerier = delegatee.getDetailsQuerier
+//		m_fnGetInputQuerier = delegatee.getInputQuerier
+//		m_fnGetEditQuerier = delegatee.getEditQuerier
+		self.delegatee = delegatee
 	}
-	func getDeleteQuerier(_ id : Int) -> Querier<E> {return m_fnGetDeleteQuerier(id)}
-	func getCancelQuerier(_ id : Int) -> Querier<E> {return m_fnGetCancelQuerier(id)}
-	func getDetailsQuerier(_ id : Int) -> Querier<E> {return m_fnGetDetailsQuerier(id)}
-	func getInputQuerier(_ id : Int) -> Querier<E> {return m_fnGetInputQuerier(id)}
-	func getEditQuerier(_ id : Int) -> Querier<E> {return m_fnGetEditQuerier(id)}
+//	func getDeleteQuerier<T>(_ id : Int) -> Querier<T> {return m_fnGetDeleteQuerier(id)}
+//	func getCancelQuerier<T>(_ id : Int) -> Querier<T> {return m_fnGetCancelQuerier(id)}
+//	func getDetailsQuerier<T>(_ id : Int) -> Querier<T> {return m_fnGetDetailsQuerier(id)}
+//	func getInputQuerier<T>(_ id : Int) -> Querier<T> {return m_fnGetInputQuerier(id)}
+//	func getEditQuerier<T>(_ id : Int) -> Querier<T> {return m_fnGetEditQuerier(id)}
+	func getDeleteQuerier<T>(_ id : Int) -> Querier<T> {return delegatee.getDeleteQuerier(id)}
+	func getCancelQuerier<T>(_ id : Int) -> Querier<T> {return delegatee.getCancelQuerier(id)}
+	func getDetailsQuerier<T>(_ id : Int) -> Querier<T> {return delegatee.getDetailsQuerier(id)}
+	func getInputQuerier<T>(_ id : Int) -> Querier<T> {return delegatee.getInputQuerier(id)}
+	func getEditQuerier<T>(_ id : Int) -> Querier<T> {return delegatee.getEditQuerier(id)}
 }
 
 /**
@@ -103,7 +110,7 @@ class IEntityNao<E> : PEntityNao {
 * @author BraveLu
 */
 protocol POperationNao : PEntityNao {
-	associatedtype O where O==E
+	associatedtype O /*where O==E*/
 	/** 举报操作查询器 */
 	func getOperateQuerier(_ id : Int) -> Querier<O>
 }
@@ -165,11 +172,11 @@ class BaseEntityNao<E> : BaseNao<E> , PEntityNao {
 		querier.operation = operation
 		return querier
 	}
-	func getDeleteQuerier(_ id : Int) -> Querier<E> {return getCommonQuerier(id, "!delete" , "删除" , Business.OP_DELETE)}
-	func getCancelQuerier(_ id : Int) -> Querier<E> {return getCommonQuerier(id, "!cancel" , "取消" , Business.OP_CANCEl)}
-	func getInputQuerier(_ id : Int) -> Querier<E> {return getCommonQuerier(id, "!input" , "输入" , Business.OP_INPUT)}
-	func getEditQuerier(_ id : Int) -> Querier<E> {return getCommonQuerier(id, "!edit" , "编辑" , Business.OP_MODIFY)}
-	func getDetailsQuerier(_ id : Int) -> Querier<E> {return getCommonQuerier(id, "!details" , "详情" , Business.OP_DETAILS)}
+	func getDeleteQuerier<T>(_ id : Int) -> Querier<T> {return getCommonQuerier(id, "!delete" , "删除" , Business.OP_DELETE)}
+	func getCancelQuerier<T>(_ id : Int) -> Querier<T> {return getCommonQuerier(id, "!cancel" , "取消" , Business.OP_CANCEl)}
+	func getInputQuerier<T>(_ id : Int) -> Querier<T> {return getCommonQuerier(id, "!input" , "输入" , Business.OP_INPUT)}
+	func getEditQuerier<T>(_ id : Int) -> Querier<T> {return getCommonQuerier(id, "!edit" , "编辑" , Business.OP_MODIFY)}
+	func getDetailsQuerier<T>(_ id : Int) -> Querier<T> {return getCommonQuerier(id, "!details" , "详情" , Business.OP_DETAILS)}
 	//func getCommonQuerier<T>(_ id : Int) -> Querier<T> {return Querier<T>()}
 }
 

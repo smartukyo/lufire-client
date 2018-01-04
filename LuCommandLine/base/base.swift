@@ -56,6 +56,8 @@ class Communicator<R> {
 		//var response : R? = ListLeaseOrdersResult() as! R
 		var response : R?
 		if (querier.presenter?.pid == Business.OP_LIST) {response = ListLeaseOrdersResult() as! R}
+		else if (querier.operation == Business.OP_INPUT) {response = OrderResult() as! R}
+		else if (querier.operation == Business.OP_DELETE) {response = DeleteOrderResult() as! R}
 		else {response = Result() as! R}
 		//let c = type(of:R.self)
 		//print("\(c)")

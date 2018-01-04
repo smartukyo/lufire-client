@@ -22,7 +22,6 @@ view.onCmdCancel()
 view.id = 0
 view.onCmdInput()
 view.onCmdEdit()
-view.onCmdInput()
 view.onCmdDetails()
 view.onCmdFavor()
 view.onCmdReview()

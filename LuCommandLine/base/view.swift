@@ -50,19 +50,20 @@ class OpViewEx<R> : PListener {
 * 组合视图。内含对实体的操作，以及对实体列表的操作。
 * @param <E> 实体/元素操作返回类型
 * @param <L> 列表操作返回类型
+* @param <I> input操作返回类型
 * @author BraveLu
 */
-class ComboView<E, L> {
+class ComboView<E, L, I> {
 	/** base "inner class" for callbacks */
-	class InnerOpView<T, E, L> : OpViewEx<T> {
-		var outer : ComboView<E, L>
-		init(_ outer : ComboView<E, L>) {
+	class InnerOpView<T, E, L, I> : OpViewEx<T> {
+		var outer : ComboView<E, L, I>
+		init(_ outer : ComboView<E, L, I>) {
 			self.outer = outer
 			super.init()
 		}
 	}
 	/** list operation callback */
-	class ListView<L> : InnerOpView<L, E, L> {
+	class ListView<L> : InnerOpView<L, E, L, I> {
 //		var outer : ComboView<E, L>
 //		init(_ outer : ComboView<E, L>) {
 //			self.outer = outer
@@ -76,28 +77,28 @@ class ComboView<E, L> {
 		}
 	}
 	/** any other operations callback */
-	class SimpleOpView<E> : InnerOpView<E, E, L> {
+	class SimpleOpView<T> : InnerOpView<T, E, L, I> {
 		override var operationName : String {return "\(outer.entityName)"}
-		override func show(_ response: E , _ querier : Querier<E>?) {
+		override func show(_ response: T , _ querier : Querier<T>?) {
 			super.show(response , querier)
 			outer.simpleOperate(response , querier)
 		}
 	}
 	/** querier processor for edit operation */
-	class EditQuerierProcessor<E> : PQuerierProcessor {
-		typealias R = E
-		var outer : ComboView<E, L>
-		init(_ outer : ComboView<E, L>) {self.outer = outer}
+	class EditQuerierProcessor<T> : PQuerierProcessor {
+		typealias R = T
+		var outer : ComboView<E, L, I>
+		init(_ outer : ComboView<E, L, I>) {self.outer = outer}
 		func processQuerier(_ querier : Querier<R>) -> Querier<R> {
 			outer.processEditQuerier(querier)
 			return querier
 		}
 	}
 	/** querier processor for input operation */
-	class InputQuerierProcessor<E> : PQuerierProcessor {
-		typealias R = E
-		var outer : ComboView<E, L>
-		init(_ outer : ComboView<E, L>) {self.outer = outer}
+	class InputQuerierProcessor<T> : PQuerierProcessor {
+		typealias R = I
+		var outer : ComboView<E, L, I>
+		init(_ outer : ComboView<E, L, I>) {self.outer = outer}
 		func processQuerier(_ querier : Querier<R>) -> Querier<R> {
 			outer.processInputQuerier(querier)
 			return querier
@@ -109,7 +110,7 @@ class ComboView<E, L> {
 		print("Please show the list here.")
 	}
 	/** the final callback for other operations */
-	func simpleOperate<T>(_ response : E , _ querier : Querier<T>?) {
+	func simpleOperate<T>(_ response : T , _ querier : Querier<T>?) {
 		switch querier!.operation {
 //		case Business.OP_DELETE : print("Delete OK!")
 //		case Business.OP_CANCEl : print("Cancel OK!")
@@ -121,11 +122,11 @@ class ComboView<E, L> {
 		}
 	}
 	/** add necessary information to querier for edit operation */
-	func processEditQuerier(_ querier : Querier<E>) {
+	func processEditQuerier<T>(_ querier : Querier<T>) {
 		// put processing codes here in subclasses
 	}
 	/** add necessary information to querier for input operation */
-	func processInputQuerier(_ querier : Querier<E>) {
+	func processInputQuerier<T>(_ querier : Querier<T>) {
 		// put processing codes here in subclasses
 	}
 	/** 实体类型名称 */
@@ -133,11 +134,13 @@ class ComboView<E, L> {
 	var operation = 0
 	/** 组合Presenter */
 	var comboPresenter : ComboPresenter<E, L>?
+	var entityPresenter : EntityPresenter<E>? {return comboPresenter?.entityPresenter}
 	init() {
 		listView = ListView<L>(self)
-		simpleOpView = SimpleOpView<E>(self)
-		editQuerierProcessor = EditQuerierProcessor(self)
-		inputQuerierProcessor = InputQuerierProcessor(self)
+		//simpleOpView = SimpleOpView<E>(self)
+		//inputOpView = SimpleOpView<I>(self)
+		//editQuerierProcessor = EditQuerierProcessor(self)
+		//inputQuerierProcessor = InputQuerierProcessor(self)
 		comboPresenter = createComboPresenter()
 		//listView.operationName = "获取\(entityName)列表"
 	}
@@ -150,9 +153,14 @@ class ComboView<E, L> {
 //	};
 	var listView : ListView<L>? = nil
 	/** 简单操作视图 */
-	var simpleOpView : SimpleOpView<E>? = nil
-	var editQuerierProcessor : EditQuerierProcessor<E>? = nil
-	var inputQuerierProcessor : InputQuerierProcessor<E>? = nil
+	//var simpleOpView : SimpleOpView<E>? = nil
+	//var inputOpView : SimpleOpView<I>? = nil
+	func getSimpleOpView() -> SimpleOpView<E> {return SimpleOpView<E>(self)}
+	func getInputOpView() -> SimpleOpView<I> {return SimpleOpView<I>(self)}
+	//var editQuerierProcessor : EditQuerierProcessor<E>? = nil
+	//var inputQuerierProcessor : InputQuerierProcessor<I>? = nil
+	func getEditQuerierProcessor() -> EditQuerierProcessor<E> {return EditQuerierProcessor<E>(self)}
+	func getInputQuerierProcessor() -> InputQuerierProcessor<I> {return InputQuerierProcessor<I>(self)}
 //	/** 取消视图 */
 //	protected OpView<E> m_cancelView=new OpView<E>() {
 //	@Override public String getOperationName() {return "取消"+m_entityName;}
@@ -193,24 +201,24 @@ class ComboView<E, L> {
 		listPresenter!.execute()
 	}
 	/** 删除 */
-	func onCmdDelete() {comboPresenter?.entityPresenter.delete(id, IListener(simpleOpView!))}
+	func onCmdDelete() {entityPresenter?.delete(id, IListener(getSimpleOpView()))}
 	/** 取消 */
-	func onCmdCancel() {comboPresenter?.entityPresenter.cancel(id, IListener(simpleOpView!))}
+	func onCmdCancel() {entityPresenter?.cancel(id, IListener(getSimpleOpView()))}
 	/** 编辑UI */
 	func onCmdInput() {
-		if operation != 0 {comboPresenter?.entityPresenter.operation = operation}
-		comboPresenter?.entityPresenter.input(id, IListener(simpleOpView!), IQuerierProcessor(inputQuerierProcessor!))
+		if operation != 0 {entityPresenter?.operation = operation}
+		entityPresenter?.input(id, IListener(getInputOpView()), IQuerierProcessor(getInputQuerierProcessor()))
 	}
 	/** 编辑 */
 	func onCmdEdit() {
-		if operation != 0 {comboPresenter?.entityPresenter.operation = operation}
-		comboPresenter?.entityPresenter.edit(id, IListener(simpleOpView!), IQuerierProcessor(editQuerierProcessor!))
+		if operation != 0 {entityPresenter?.operation = operation}
+		entityPresenter?.edit(id, IListener(getSimpleOpView()), IQuerierProcessor(getEditQuerierProcessor()))
 	}
 	/** 详情 */
-	func onCmdDetails() {comboPresenter?.entityPresenter.details(id, IListener(simpleOpView!))}
+	func onCmdDetails() {entityPresenter?.details(id, IListener(getSimpleOpView()))}
 	/** 执行某项操作 */
 	func doCmdOperate(_ operation : Int) {
 		let o : OperationPresenter<E>? = comboPresenter?.findOperationPresenter(operation)
-		o?.operate(id, IListener(simpleOpView!))
+		o?.operate(id, IListener(getSimpleOpView()))
 	}
 }

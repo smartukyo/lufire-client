@@ -12,7 +12,7 @@ import Foundation
 * 订单视图
 * @author BraveLu
 */
-class OrderView : ComboView<Result, ListLeaseOrdersResult> {
+class OrderView : ComboView<Result, ListLeaseOrdersResult, OrderResult> {
 	override init() {
 		super.init()
 		entityName = "订单"
@@ -28,6 +28,17 @@ class OrderView : ComboView<Result, ListLeaseOrdersResult> {
 	func onCmdReview() {
 		doCmdOperate(Business.OP_REVIEW)
 	}
+	/** callback for common operations */
+	override func simpleOperate<T>(_ response: T, _ querier: Querier<T>?) {
+		switch querier!.operation {
+		case Business.OP_FAVOR:
+			print("评价评价评价评价评价评价评价评价评价评价评价评价 OK")
+		default:
+			super.simpleOperate(response, querier)
+		}
+	}
+	/** 删除 */
+	override func onCmdDelete() {entityPresenter?.delete(id, IListener(SimpleOpView<DeleteOrderResult>(self)))}
 }
 
 /**
@@ -64,11 +75,11 @@ class BuyerOrderView : OrderView {
 //		//listResult.error
 //	}
 	
-	override func processEditQuerier(_ querier: Querier<Result>) {
+	override func processEditQuerier<T>(_ querier: Querier<T>) {
 		querier.params["saleItemId"] = 20
 		querier.params["payMode"] = 1
 	}
-	override func processInputQuerier(_ querier: Querier<Result>) {
+	override func processInputQuerier<T>(_ querier: Querier<T>) {
 		querier.params["saleItemId"] = 20
 	}
 }
@@ -77,7 +88,7 @@ class VendorOrderView : OrderView {
 	override func createComboPresenter() -> ComboPresenter<Result,ListLeaseOrdersResult> {
 		return VendorOrderComboPresenter()
 	}
-	override func processEditQuerier(_ querier: Querier<Result>) {
+	override func processEditQuerier<T>(_ querier: Querier<T>) {
 		switch querier.operation {
 		case VendorOrderNao.OPERATION_CHANGE_PAYMENT:
 			querier.params["orderItem.due"] = 200

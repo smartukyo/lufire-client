@@ -21,6 +21,28 @@ class OrderNao : BaseEntityNao<Result> {
 	static func obtainOrderNaoInstance() -> OrderNao {return INSTANCE}
 }
 
+class EditOrderNao : BaseNao<OrderResult> {
+	override init() {
+		super.init()
+		baseUrl = Config.BASE_URL+"lease/"
+	}
+	private static var INSTANCE = EditOrderNao()
+	static func obtainEditOrderNaoInstance() -> EditOrderNao {return INSTANCE}
+}
+
+//debug only
+class DeleteOrderNao : BaseEntityNao<DeleteOrderResult> {
+	override init() {
+		super.init()
+		baseUrl = Config.BASE_URL+"lease/"
+	}
+	private static var INSTANCE = DeleteOrderNao()
+	static func obtainDeleteOrderNaoInstance() -> DeleteOrderNao {return INSTANCE}
+	override func getDeleteQuerier<DeleteOrderResult>(_ id: Int) -> Querier<DeleteOrderResult> {
+		return super.getDeleteQuerier(id)
+	}
+}
+
 class BuyerOrderNao : OrderNao {
 	override init() {
 		super.init()
@@ -48,7 +70,7 @@ class VendorOrderNao : OrderNao {
 	}
 	private static var INSTANCE = VendorOrderNao()
 	static func obtainVendorOrderNaoInstance() -> VendorOrderNao {return INSTANCE}
-	override func getEditQuerier(_ id: Int) -> Querier<Result> {
+	override func getEditQuerier<T>(_ id: Int) -> Querier<T> {
 		let operationMethod = operation == VendorOrderNao.OPERATION_CHANGE_PAYMENT ? "changePayment" : "finish"
 		return getCommonQuerier(id, "!\(operationMethod)" , "编辑" , /*Business.OP_MODIFY*/operation)
 	}
