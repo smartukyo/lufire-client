@@ -18,6 +18,8 @@ class Nao<R> {
 	var baseUrl : String? = ""
 	/** 基本参数集 */
 	var baseParams : Dictionary<String , Any> =  Dictionary<String , Any>()
+	/** the current operation */
+	var operation = 0
 	
 	/** 对查询器进行加工 */
 	func processQuerier(_ querier : Querier<R>) -> Querier<R>  {
@@ -155,10 +157,10 @@ class BaseEntityNao<E> : BaseNao<E> , PEntityNao {
 	* @param method
 	* @return
 	*/
-	func getCommonQuerier(_ id : Int, _ method : String, _ name : String , _ operation : Int) -> Querier<E> {
-		let querier = Querier<E>(method, nil, nil)
+	func getCommonQuerier<T>(_ id : Int, _ method : String, _ name : String , _ operation : Int) -> Querier<T> {
+		let querier = Querier<T>(method, nil, nil)
 		//var p = querier.obtainParams()
-		querier.params["id"] = id
+		if id != 0 {querier.params["id"] = id}
 		querier.name = name
 		querier.operation = operation
 		return querier
@@ -168,12 +170,12 @@ class BaseEntityNao<E> : BaseNao<E> , PEntityNao {
 	func getInputQuerier(_ id : Int) -> Querier<E> {return getCommonQuerier(id, "!input" , "输入" , Business.OP_INPUT)}
 	func getEditQuerier(_ id : Int) -> Querier<E> {return getCommonQuerier(id, "!edit" , "编辑" , Business.OP_MODIFY)}
 	func getDetailsQuerier(_ id : Int) -> Querier<E> {return getCommonQuerier(id, "!details" , "详情" , Business.OP_DETAILS)}
+	//func getCommonQuerier<T>(_ id : Int) -> Querier<T> {return Querier<T>()}
 }
 
 class OperationNao<T> : BaseEntityNao<T> , POperationNao {
 	typealias O = T
 	var name = ""
-	var operation = 0
 	func getOperateQuerier(_ targetId : Int) -> Querier<T> {
 		let querier = Querier<T>("", nil, nil)
 		querier.params["targetId"] = targetId

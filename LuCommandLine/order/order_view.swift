@@ -59,6 +59,31 @@ class BuyerOrderView : OrderView {
 		print("display all orders here!!!!! error=\(response.error)")
 	}
 	
+//	func showListEx(_ response : Any) {
+//		var listResult = response as! ListLeaseOrdersResult
+//		//listResult.error
+//	}
+	
+	override func processEditQuerier(_ querier: Querier<Result>) {
+		querier.params["saleItemId"] = 20
+		querier.params["payMode"] = 1
+	}
+	override func processInputQuerier(_ querier: Querier<Result>) {
+		querier.params["saleItemId"] = 20
+	}
 }
 
+class VendorOrderView : OrderView {
+	override func createComboPresenter() -> ComboPresenter<Result,ListLeaseOrdersResult> {
+		return VendorOrderComboPresenter()
+	}
+	override func processEditQuerier(_ querier: Querier<Result>) {
+		switch querier.operation {
+		case VendorOrderNao.OPERATION_CHANGE_PAYMENT:
+			querier.params["orderItem.due"] = 200
+		default: //VendorOrderNao.OPERATION_FINISH:
+			querier.params["orderItem.due"] = 400
+		}
+	}
+}
 

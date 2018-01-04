@@ -24,12 +24,8 @@ class /* should be struct? */ IListener<R> : PListener {
 		m_fnOnResponse=delegatee.onResponse
 		m_fnOnError=delegatee.onError
 	}
-	func onResponse(_ response : R , _ querier : Querier<R>?) -> Void {
-		return m_fnOnResponse(response , querier)
-	}
-	func onError(_ error : Int, _ msg : String ,  _ querier : Querier<R>?) -> Void {
-		return m_fnOnError(error, msg , querier)
-	}
+	func onResponse(_ response : R , _ querier : Querier<R>?) -> Void {return m_fnOnResponse(response , querier)}
+	func onError(_ error : Int, _ msg : String ,  _ querier : Querier<R>?) -> Void {return m_fnOnError(error, msg , querier)}
 }
 
 class Communicator<R> {
@@ -183,6 +179,24 @@ class Querier<R> {
 		self.fnOnResponse = fnOnResponse
 		self.fnOnError = fnOnError
 	}
+}
+
+/**
+* 查询器加工器
+* @param <R>
+* @author BraveLu
+*/
+protocol PQuerierProcessor {
+	associatedtype R
+	/** 对查询器进行加工 */
+	func processQuerier(_ querier : Querier<R>) -> Querier<R>
+}
+
+/** 查询器加工器 */
+class IQuerierProcessor<R> : PQuerierProcessor {
+	let m_fnProcessQuerier : (Querier<R>) -> Querier<R>
+	init<D: PQuerierProcessor>(_ delegatee: D) where D.R == R {m_fnProcessQuerier=delegatee.processQuerier}
+	func processQuerier(_ querier : Querier<R>) -> Querier<R> {return m_fnProcessQuerier(querier)}
 }
 
 class BaseCommunicator<R> : Communicator<R> {

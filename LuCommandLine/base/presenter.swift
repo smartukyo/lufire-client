@@ -21,6 +21,8 @@ protocol PPresenter {
 class Presenter<R> : PPresenter {
 	/** Presenter ID */
 	var pid : Int = 0
+	/** 操作类型 */
+	var operation : Int = 0
 	/** 默认的NAO */
 	var nao : Nao<R>? = nil
 	/** 默认的监听器 */
@@ -37,10 +39,13 @@ class Presenter<R> : PPresenter {
 	* @param listener 监听器
 	* @return 错误码（表示同步结果）
 	*/
-	func execute<T>(_ nao : Nao<T> , _ querier : Querier<T> , _ listener : IListener<T>) -> Int {
+	func execute<T>(_ nao : Nao<T> , _ querier : Querier<T> , _ listener : IListener<T> , _ processor : IQuerierProcessor<T>? = nil) -> Int {
 		querier.presenter = self
 		querier.listener = listener
-		return nao.execute(querier)
+		var q = querier
+		if let p = processor {q = p.processQuerier(querier)}
+		nao.operation = operation
+		return nao.execute(q)
 	}
 	/**
 	* 执行操作
@@ -78,7 +83,7 @@ class ListPresenter<R> : Presenter<R> {
 		super.init()
 		pid = Business.OP_LIST
 	}
-	override func execute<T>(_ nao : Nao<T> , _ querier : Querier<T> , _ listener : IListener<T>) -> Int {
+	override func execute<T>(_ nao : Nao<T> , _ querier : Querier<T> , _ listener : IListener<T> , _ processor : IQuerierProcessor<T>? = nil) -> Int {
 		// 为查询器设置分页器（如果有）
 		if let pager=self.pager { querier.pager = pager }
 		return super.execute(nao, querier, listener);
@@ -135,11 +140,10 @@ class GroupPresenter<R> : Presenter<R> {
 class EntityPresenter<E> : GroupPresenter<E> {
 	/** 实体对象的ID */
 	var id : Int = 0
-	/** 操作类型 */
-	var operation : Int = 0
 	/**  */
 	var entityNao : IEntityNao<E>? {
 		get {
+			nao!.operation = operation
 			let o : Any? = nao
 			//return o as! IEntityNao<E>
 			if o is BaseEntityNao<E> {
@@ -150,23 +154,23 @@ class EntityPresenter<E> : GroupPresenter<E> {
 	}
 	/** 删除 */
 	func delete(_ id : Int , _ listener : IListener<E>) -> Int {
-		return execute(nao!, entityNao!.getDeleteQuerier(id), listener);
+		return execute(nao!, entityNao!.getDeleteQuerier(id), listener)
 	}
 	/** 取消 */
 	func cancel(_ id : Int , _ listener : IListener<E>) -> Int {
-		return execute(nao!, entityNao!.getCancelQuerier(id), listener);
+		return execute(nao!, entityNao!.getCancelQuerier(id), listener)
 	}
 	/** 编辑UI */
-	func input(_ id : Int , _ listener : IListener<E>) -> Int {
-		return execute(nao!, entityNao!.getInputQuerier(id), listener);
+	func input(_ id : Int , _ listener : IListener<E> , _ processor : IQuerierProcessor<E>? = nil) -> Int {
+		return execute(nao!, entityNao!.getInputQuerier(id), listener , processor)
 	}
 	/** 编辑 */
-	func edit(_ id : Int , _ listener : IListener<E>) -> Int {
-		return execute(nao!, entityNao!.getEditQuerier(id), listener);
+	func edit(_ id : Int , _ listener : IListener<E> , _ processor : IQuerierProcessor<E>) -> Int {
+		return execute(nao!, entityNao!.getEditQuerier(id), listener, processor)
 	}
 	/** 获取详情 */
 	func details(_ id : Int , _ listener : IListener<E>) -> Int {
-		return execute(nao!, entityNao!.getDetailsQuerier(id), listener);
+		return execute(nao!, entityNao!.getDetailsQuerier(id), listener)
 	}
 }
 

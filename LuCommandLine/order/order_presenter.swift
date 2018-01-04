@@ -44,13 +44,23 @@ class BuyerOrderListPresenter : OrderListPresenter {
 }
 
 /**
+* Vendor订单列表操作
+* @author BraveLu
+*/
+class VendorOrderListPresenter : OrderListPresenter {
+	override var querier : Querier<ListLeaseOrdersResult>? {
+		get {
+			return OrderListNao.getListAsVendorQuerier()
+		}
+	}
+}
+
+/**
 * 买家订单（组合）操作
 * @author BraveLu
 */
 class BuyerOrderComboPresenter : OrderComboPresenter {
-	override func createListPresenter() -> OrderListPresenter {
-		return BuyerOrderListPresenter()
-	}
+	override func createListPresenter() -> OrderListPresenter {return BuyerOrderListPresenter()}
 	override init() {
 		super.init()
 		nao = BuyerOrderNao.obtainBuyerOrderNaoInstance()
@@ -63,6 +73,18 @@ class BuyerOrderComboPresenter : OrderComboPresenter {
 	*/
 	func pay(_ money : Int, _ listener : IListener<Result>) -> Int {
 		return execute(nao!, BuyerOrderNao.getPayQuerier(money), listener);
+	}
+}
+
+/**
+* Vendor订单（组合）操作
+* @author BraveLu
+*/
+class VendorOrderComboPresenter : OrderComboPresenter {
+	override func createListPresenter() -> OrderListPresenter {return VendorOrderListPresenter()}
+	override init() {
+		super.init()
+		nao = VendorOrderNao.obtainVendorOrderNaoInstance()
 	}
 }
 

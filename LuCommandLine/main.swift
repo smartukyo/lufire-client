@@ -19,8 +19,16 @@ repeat {view.onCmdList()} while (view.increasePage() < 10);
 view.id = 100
 view.onCmdDelete()
 view.onCmdCancel()
+view.id = 0
+view.onCmdInput()
 view.onCmdEdit()
 view.onCmdInput()
 view.onCmdDetails()
 view.onCmdFavor()
 view.onCmdReview()
+var vendorOrderView = VendorOrderView()
+vendorOrderView.id = 100
+vendorOrderView.operation = VendorOrderNao.OPERATION_CHANGE_PAYMENT
+vendorOrderView.onCmdEdit()
+vendorOrderView.operation = VendorOrderNao.OPERATION_FINISH
+vendorOrderView.onCmdEdit()

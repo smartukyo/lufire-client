@@ -39,6 +39,21 @@ class BuyerOrderNao : OrderNao {
 	}
 }
 
+class VendorOrderNao : OrderNao {
+	static let OPERATION_CHANGE_PAYMENT = 2000
+	static let OPERATION_FINISH = 2001
+	override init() {
+		super.init()
+		baseUrl = Config.BASE_URL+"lease/lessor/order";
+	}
+	private static var INSTANCE = VendorOrderNao()
+	static func obtainVendorOrderNaoInstance() -> VendorOrderNao {return INSTANCE}
+	override func getEditQuerier(_ id: Int) -> Querier<Result> {
+		let operationMethod = operation == VendorOrderNao.OPERATION_CHANGE_PAYMENT ? "changePayment" : "finish"
+		return getCommonQuerier(id, "!\(operationMethod)" , "编辑" , /*Business.OP_MODIFY*/operation)
+	}
+}
+
 /**
 * 订单列表操作NAO
 * @author BraveLu
